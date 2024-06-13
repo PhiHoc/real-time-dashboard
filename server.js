@@ -26,7 +26,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Endpoint to receive JSON data
-app.post('/update', async (req, res) => {
+app.post('/', async (req, res) => {
     const data = req.body;
 
     console.log('Emitting statusUpdate:', data); // Log emitted data
