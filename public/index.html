@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Domain Status Dashboard</title>
+  <script src="/socket.io/socket.io.js"></script> <!-- Include Socket.io library -->
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 12px; border: 1px solid #ccc; }
+    th { background-color: #f4f4f4; }
+    tr { text-align: center; }
+    .color-green { background-color: green; color: white; }
+    .color-red { background-color: red; color: white; animation: flickerAnimation 1s infinite; }
+    .color-gray { background-color: gray; color: white; animation: flickerAnimation 1s infinite; }
+    .color-orange { background-color: orange; color: white; animation: flickerAnimation 1s infinite; }
+    .color-yellow { background-color: yellow; color: black; animation: flickerAnimation 1s infinite; }
+    .color-blue { background-color: blue; color: white; animation: flickerAnimation 1s infinite; }
+    .color-pink { background-color: purple; color: white; animation: flickerAnimation 1s infinite; }
+    .color-black { background-color: black; color: white; animation: flickerAnimation 1s infinite; }
+
+    @keyframes flickerAnimation {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }}
+  </style>
+</head>
+<body>
+  <h1>Domain Status Dashboard</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ISP</th>
+        <th>Domain</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="domainStatusTable">
+      <tr id="vnpt"><td>VNPT</td><td></td><td></td></tr>
+      <tr id="fpt"><td>FPT</td><td></td><td></td></tr>
+      <tr id="vpn"><td>VPN</td><td></td><td></td></tr>
+      <tr id="viettel"><td>Viettel</td><td></td><td></td></tr>
+      <tr id="vina4g"><td>Vina4G</td><td></td><td></td></tr>
+      <tr id="viettel4g"><td>Viettel4G</td><td></td><td></td></tr>
+      <tr id="mobi"><td>Mobi</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <script>
+
+    const colorClasses = {
+        'red': 'color-red',
+        'yellow': 'color-yellow',
+        'gray': 'color-gray',
+        'orange': 'color-orange',
+        'blue': 'color-blue',
+        'pink': 'color-pink',
+        'black': 'color-black',
+        'green': 'color-green',
+    };
+
+    const socket = io();
+
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('statusUpdate', (data) => {
+      console.log('Received data:', data); // Log received data
+      const row = document.getElementById(data.isp.toLowerCase());
+
+      if (row) {
+        const statusCell = row.cells[2];
+        row.cells[1].textContent = data.domain;
+        statusCell.textContent = data.status;
+
+        console.log(colorClasses[data.color.toLowerCase()])
+        statusCell.className = colorClasses[data.color.toLowerCase()] || '';
+      } else {
+        console.error(`No row found for ISP: ${data.isp}`);
+      }
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server');
+    });
+  </script>
+</body>
+</html>
